@@ -1,0 +1,86 @@
+import pygame
+
+pygame.init()
+
+WIDTH = 900
+HEIGHT = 950
+screen = pygame.display.set_mode([WIDTH, HEIGHT])
+timer = pygame.time.Clock()
+fps = 60
+
+background = pygame.image.load('maze.png').convert()
+francis = pygame.image.load('fracnsi.png').convert_alpha()
+
+francis_x = 195
+francis_y = 100
+francis_speed = 4
+
+obstacles = [
+    # middle square
+    pygame.Rect(173, 180, 199, 10),
+    pygame.Rect(173, 370, 199, 10),
+    pygame.Rect(362, 180, 10, 190),
+    pygame.Rect(173, 180, 10, 190),
+    
+    pygame.Rect(83, 86, 10, 110),
+    pygame.Rect(83, 84, 100, 10),
+    pygame.Rect(84, 275, 10, 193),
+    pygame.Rect(85, 460, 100, 10),
+    pygame.Rect(268, 84, 200, 10),
+    pygame.Rect(458, 86, 10, 110),
+    pygame.Rect(458, 275, 10, 190),
+    pygame.Rect(268, 460, 200, 10),
+    pygame.Rect(362, 275, 100, 10),
+    pygame.Rect(362, 466, 10, 110)
+    # pygame.Rect(362, 180, 10, 190),
+    # pygame.Rect(362, 180, 10, 190),
+]
+
+
+run = True
+while run:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+
+    keys = pygame.key.get_pressed()
+
+    new_x, new_y = francis_x, francis_y
+    print(new_x, new_y)
+
+    if keys[pygame.K_LEFT]:
+        new_x -= francis_speed
+    if keys[pygame.K_RIGHT]:
+        new_x += francis_speed
+    if keys[pygame.K_UP]:
+        new_y -= francis_speed
+    if keys[pygame.K_DOWN]:
+        new_y += francis_speed
+
+    francis_rect = pygame.Rect(new_x, new_y, francis.get_width() - 10, francis.get_height() - 10)
+
+    if 0 <= new_x <= 480 and 0 <= new_y <= 480:
+        
+        collision = False
+        for obstacle in obstacles:
+            if francis_rect.colliderect(obstacle):
+                collision = True
+                break
+
+        if not collision:
+            francis_x, francis_y = new_x, new_y
+
+    timer.tick(fps)
+
+    screen.blit(background, (0, 0))
+    screen.blit(francis, (francis_x, francis_y))
+
+    for i, obstacle in enumerate(obstacles):
+        if i == 0:
+            pygame.draw.rect(screen, (255, 255, 255), obstacle) 
+        else:
+            pygame.draw.rect(screen, (167,231,30), obstacle)  
+
+    pygame.display.flip()
+
+pygame.quit()
