@@ -1,0 +1,170 @@
+# mom ai is smarter, can get unstuck sometimes
+
+import math
+import pygame
+
+pygame.init()
+
+WIDTH = 900
+HEIGHT = 950
+screen = pygame.display.set_mode([WIDTH, HEIGHT])
+timer = pygame.time.Clock()
+fps = 60
+
+background = pygame.image.load('maze.png').convert()
+francis = pygame.image.load('fracnsi.png').convert_alpha()
+mom = pygame.image.load('mom.png').convert_alpha()
+
+francis_x = 195
+francis_y = 100
+francis_speed = 6
+
+mom_x = 200
+mom_y = 200
+mom_speed = 2
+
+previous_mom_x = mom_x
+previous_mom_y = mom_y
+
+obstacle = pygame.Rect(173, 180, 199, 10)
+
+obstacles = [
+    pygame.Rect(173, 370, 199, 10),
+    pygame.Rect(362, 180, 10, 190),
+    pygame.Rect(173, 180, 10, 190),
+    pygame.Rect(83, 86, 10, 110),
+    pygame.Rect(83, 84, 100, 10),
+    pygame.Rect(84, 275, 10, 193),
+    pygame.Rect(85, 460, 100, 10),
+    pygame.Rect(268, 84, 200, 10),
+    pygame.Rect(458, 86, 10, 110),
+    pygame.Rect(458, 275, 10, 190),
+    pygame.Rect(268, 460, 200, 10),
+    pygame.Rect(362, 275, 100, 10),
+    pygame.Rect(362, 466, 10, 110)
+]
+
+
+def francis_move():
+    global new_x, new_y
+    if keys[pygame.K_LEFT]:
+        new_x -= francis_speed
+    if keys[pygame.K_RIGHT]:
+        new_x += francis_speed
+    if keys[pygame.K_UP]:
+        new_y -= francis_speed
+    if keys[pygame.K_DOWN]:
+        new_y += francis_speed
+
+def obstacle_gen():
+    pygame.draw.rect(screen, (255,255,255), obstacle)
+    for ob in obstacles:
+        pygame.draw.rect(screen, (167, 231, 30), ob)
+
+def detect_coll():
+    global francis_x, francis_y, new_x, new_y
+    francis_rect = pygame.Rect(new_x, new_y, francis.get_width() - 10, francis.get_height() - 10)
+
+    if 0 <= new_x <= 480 and 0 <= new_y <= 480:
+        collision = False
+        for obstacle in obstacles:
+            if francis_rect.colliderect(obstacle):
+                collision = True
+                break
+
+        if not collision:
+            francis_x, francis_y = new_x, new_y
+
+    screen.blit(francis, (francis_x, francis_y))
+
+def move_mom():
+    global mom_x, mom_y, previous_mom_x, previous_mom_y
+    dir_x = francis_x - mom_x
+    dir_y = francis_y - mom_y
+
+    # calculate the distance of mom from francis
+    distance = math.sqrt(dir_x ** 2 + dir_y ** 2)
+
+    # make consistent speed
+    if distance != 0:
+        dir_x /= distance
+        dir_y /= distance
+
+    # move mom towards francis
+    new_mom_x = mom_x + dir_x * mom_speed
+    new_mom_y = mom_y + dir_y * mom_speed
+
+    mom_rect = pygame.Rect(new_mom_x, new_mom_y, mom.get_width(), mom.get_height())
+    collision = False
+    for obstacle in obstacles:
+        if mom_rect.colliderect(obstacle):
+            collision = True
+            break
+
+    #update position if there's no collision
+    if not collision:
+        mom_x = new_mom_x
+        mom_y = new_mom_y
+    else:
+        # check if mom isn't moving
+        if previous_mom_x == mom_x and previous_mom_y == mom_y:
+            # prioritize y-direction
+            new_mom_y = mom_y + dir_y * mom_speed
+            mom_rect = pygame.Rect(mom_x, new_mom_y, mom.get_width(), mom.get_height())
+            collision = False
+            for obstacle in obstacles:
+                if mom_rect.colliderect(obstacle):
+                    collision = True
+                    break
+
+            if not collision:
+                mom_y = new_mom_y
+            else:
+                # if still colliding, try x-direction
+                new_mom_x = mom_x + dir_x * mom_speed
+                mom_rect = pygame.Rect(new_mom_x, mom_y, mom.get_width(), mom.get_height())
+                collision = False
+                for obstacle in obstacles:
+                    if mom_rect.colliderect(obstacle):
+                        collision = True
+                        break
+
+                if not collision:
+                    mom_x = new_mom_x
+
+    previous_mom_x = mom_x
+    previous_mom_y = mom_y
+
+    screen.blit(mom, (mom_x, mom_y))
+
+start_time = pygame.time.get_ticks()
+move_mom_delay = 4000  # 4 seconds delay
+
+run = True
+while run:
+    timer.tick(fps)
+    screen.blit(background, (0, 0))
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+
+    keys = pygame.key.get_pressed()
+
+    new_x, new_y = francis_x, francis_y
+
+    francis_move()
+
+    detect_coll()
+
+    obstacle_gen()
+    
+    current_time = pygame.time.get_ticks()
+    if current_time - start_time >= move_mom_delay:
+        move_mom()
+    else:
+        screen.blit(mom, (200,200))
+
+    pygame.display.flip()
+
+pygame.quit()
