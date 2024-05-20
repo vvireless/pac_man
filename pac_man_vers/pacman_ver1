@@ -1,3 +1,5 @@
+# template, francis is movable and walls work. nothing else has been added
+
 import pygame
 
 pygame.init()
