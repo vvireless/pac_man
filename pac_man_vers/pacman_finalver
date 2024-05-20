@@ -1,5 +1,3 @@
-# MOST finished version, mom has ok AI, point system, win and lose screen.
-
 import math
 import pygame
 import time
@@ -14,9 +12,10 @@ CELL_SIZE = WIDTH // GRID_SIZE
 screen = pygame.display.set_mode([WIDTH, HEIGHT])
 timer = pygame.time.Clock()
 fps = 60
-gamescreen = 1
+gamescreen = 0
 
 background = pygame.image.load('maze.png').convert()
+begin_screen = pygame.image.load('begin.png')
 francis = pygame.image.load('fracnsi.png').convert_alpha()
 mom = pygame.image.load('mom.png').convert_alpha()
 fish = pygame.image.load('fish.png').convert_alpha()
@@ -197,15 +196,23 @@ move_mom_delay = 4000  # 4 seconds delay
 
 run = True
 while run:
+    timer.tick(fps)
+    screen.blit(background, (0, 0))
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
+            
     if gamescreen == 0:
-        pass
+        screen.blit(begin_screen, (0, 0))
+        keys = pygame.key.get_pressed()
+
+        if keys[pygame.K_SPACE]:
+            gamescreen = 1
+
+        pygame.display.flip()
+            
     elif gamescreen == 1:
-        timer.tick(fps)
-        screen.blit(background, (0, 0))
-    
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
     
         keys = pygame.key.get_pressed()
     
