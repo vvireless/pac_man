@@ -1,3 +1,5 @@
+# version where mom can go through walls, can chase francis
+
 import math
 import pygame
 
