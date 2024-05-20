@@ -19,4 +19,4 @@ and all the photo required in the pngs folder.
 
 Run on any platform that can run PyGame (i.e. replit).
 
-![alt text][https://cdn.discordapp.com/attachments/728464355649388597/1230305164536315984/IMG_2069.jpg?ex=664c8b39&is=664b39b9&hm=c3ba3b1cfa9ed6399ea3f0d731361e1a9ebf4675e35660f5109b56acbc190c7b&]
+![alt text](https://cdn.discordapp.com/attachments/728464355649388597/1230305164536315984/IMG_2069.jpg?ex=664c8b39&is=664b39b9&hm=c3ba3b1cfa9ed6399ea3f0d731361e1a9ebf4675e35660f5109b56acbc190c7b&)
