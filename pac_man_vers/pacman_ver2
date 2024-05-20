@@ -21,7 +21,7 @@ francis_speed = 4
 
 mom_x = 200
 mom_y = 200
-mom_speed = 1
+mom_speed = 2
 
 obstacles = [
     # middle square
