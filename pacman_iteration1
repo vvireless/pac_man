@@ -37,17 +37,8 @@ obstacles = [
 ]
 
 
-run = True
-while run:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            run = False
-
-    keys = pygame.key.get_pressed()
-
-    new_x, new_y = francis_x, francis_y
-    print(new_x, new_y)
-
+def francis_move():
+    global new_x, new_y
     if keys[pygame.K_LEFT]:
         new_x -= francis_speed
     if keys[pygame.K_RIGHT]:
@@ -57,10 +48,18 @@ while run:
     if keys[pygame.K_DOWN]:
         new_y += francis_speed
 
+def obstacle_gen():
+    for i, obstacle in enumerate(obstacles):
+        if i == 0:
+            pygame.draw.rect(screen, (255, 255, 255), obstacle) 
+        else:
+            pygame.draw.rect(screen, (167,231,30), obstacle)  
+
+def detect_coll():
+    global francis_x, francis_y, new_x, new_y
     francis_rect = pygame.Rect(new_x, new_y, francis.get_width() - 10, francis.get_height() - 10)
 
     if 0 <= new_x <= 480 and 0 <= new_y <= 480:
-        
         collision = False
         for obstacle in obstacles:
             if francis_rect.colliderect(obstacle):
@@ -70,17 +69,28 @@ while run:
         if not collision:
             francis_x, francis_y = new_x, new_y
 
-    timer.tick(fps)
-
-    screen.blit(background, (0, 0))
     screen.blit(francis, (francis_x, francis_y))
 
-    for i, obstacle in enumerate(obstacles):
-        if i == 0:
-            pygame.draw.rect(screen, (255, 255, 255), obstacle) 
-        else:
-            pygame.draw.rect(screen, (167,231,30), obstacle)  
+run = True
+while run:
+    timer.tick(fps)
+    screen.blit(background, (0, 0))
+    
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            run = False
 
+    keys = pygame.key.get_pressed()
+
+    new_x, new_y = francis_x, francis_y
+    print(new_x, new_y)
+
+    francis_move()
+
+    detect_coll()
+
+    obstacle_gen()
+    
     pygame.display.flip()
 
 pygame.quit()
